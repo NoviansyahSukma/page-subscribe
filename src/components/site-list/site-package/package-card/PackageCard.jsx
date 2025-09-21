@@ -11,6 +11,7 @@ export default function PackageCard({
   return (
     <>
       <div className="min-w-68 sm:min-w-68 m-auto pb-6 shadow-sm shadow-gray-500 rounded-sm overflow-hidden transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-102 hover:bg-slate-100 hover:shadow-md">
+        {/* headers card package */}
         <div className="p-3 flex bg-gray-300">
           {channel ? (
             <>
@@ -40,6 +41,7 @@ export default function PackageCard({
           </p>
         </div>
 
+        {/* main card package */}
         {dvb ? (
           <>
             <div className="max-w-58 bg-slate-100 m-auto mt-2 p-4 rounded-sm">
@@ -53,7 +55,7 @@ export default function PackageCard({
           </>
         ) : (
           <>
-            <div className="max-w-48 bg-slate-100 m-auto mt-4 p-4 rounded-sm">
+            <div className="max-w-54 bg-slate-100 m-auto mt-4 p-4 rounded-sm">
               <p className="text-xl text-slate-700 font-semibold">
                 Bundling TV
               </p>
@@ -68,14 +70,15 @@ export default function PackageCard({
               <p className="text-lg text-slate-700 font-semibold mt-3">
                 {`Rp ${price}/bulan`}
               </p>
-              <p className="flex items-center justify-between text-md text-orange-800 font-semibold mt-2">
+              <p className="flex items-center text-md text-orange-800 font-semibold mt-2">
                 <FaTools />
-                Free Biaya Instalasi
+                <span className="ml-2">Free Biaya Instalasi</span>
               </p>
             </div>
           </>
         )}
 
+        {/* button card package */}
         <div className="w-full m-auto mt-5">
           <button className="bg-red-500 m-auto block text-slate-100 py-1 px-3 rounded-lg hover:bg-red-600 hover:shadow-md">
             Syarat & Ketentuan
