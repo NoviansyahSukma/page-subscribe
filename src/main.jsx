@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, HashRouter, Route, Routes } from "react-router";
 import SitePage from "./components/SitePage";
 import SiteList from "./components/site-list/SiteList";
 import BintaroPackage from "./components/site-list/site-package/BintaroPackage";
@@ -9,7 +9,7 @@ import JuandaPackage from "./components/site-list/site-package/JuandaPackage";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<SitePage />}>
           <Route index element={<SiteList />} />
@@ -20,6 +20,6 @@ createRoot(document.getElementById("root")).render(
           </Route>
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>
 );
