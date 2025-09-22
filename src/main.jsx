@@ -6,6 +6,7 @@ import SiteList from "./components/site-list/SiteList";
 import BintaroPackage from "./components/site-list/site-package/BintaroPackage";
 import CibuburPackage from "./components/site-list/site-package/CibuburPackage";
 import JuandaPackage from "./components/site-list/site-package/JuandaPackage";
+import Modal from "./components/modal/Modal";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

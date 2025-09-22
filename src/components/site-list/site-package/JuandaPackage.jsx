@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import logoJuanda from "../../../assets/image/logo-juanda.png";
-import PackageCard from "./package-card/PackageCard";
+import PackageCard from "../../card/PackageCard";
 import { MdArrowBack } from "react-icons/md";
 
 export default function JuandaPackage() {
@@ -22,6 +22,8 @@ export default function JuandaPackage() {
 
           <div className="w-full m-auto mt-2 px-1 py-4 rounded-sm shadow-md shadow-purple-900 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <PackageCard
+              bundling={true}
+              tncJuanda={true}
               bandWidth={"10"}
               namaPaket={"SILVER"}
               channel={"49"}
@@ -29,6 +31,8 @@ export default function JuandaPackage() {
               price={"187.378"}
             />
             <PackageCard
+              bundling={true}
+              tncJuanda={true}
               bandWidth={"20"}
               namaPaket={"GOLD"}
               channel={"59"}
@@ -36,6 +40,8 @@ export default function JuandaPackage() {
               price={"275.409"}
             />
             <PackageCard
+              bundling={true}
+              tncJuanda={true}
               bandWidth={"30"}
               namaPaket={"PLATINUM"}
               channel={"70"}
@@ -43,6 +49,8 @@ export default function JuandaPackage() {
               price={"425.687"}
             />
             <PackageCard
+              bundling={true}
+              tncJuanda={true}
               bandWidth={"50"}
               namaPaket={"DIAMOND"}
               channel={"83"}
@@ -50,6 +58,8 @@ export default function JuandaPackage() {
               price={"719.496"}
             />
             <PackageCard
+              bundling={true}
+              tncJuanda={true}
               dvb={"(DVB-T)"}
               bandWidth={"2"}
               namaPaket={"IPL"}

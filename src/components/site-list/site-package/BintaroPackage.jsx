@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import logoBintaro from "../../../assets/image/logo-bintaro.png";
-import PackageCard from "./package-card/PackageCard";
+import PackageCard from "../../card/PackageCard";
 import { FaSignal } from "react-icons/fa";
 import { PiTelevision } from "react-icons/pi";
 import { MdArrowBack } from "react-icons/md";
@@ -32,6 +32,8 @@ export default function BintaroPackage() {
 
           <div className="w-full m-auto mt-2 px-1 py-4 rounded-sm shadow-md shadow-purple-900 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <PackageCard
+              bundling={true}
+              tncBundling={true}
               bandWidth={"20"}
               namaPaket={"LITE"}
               channel={"50"}
@@ -39,6 +41,8 @@ export default function BintaroPackage() {
               price={"385.000"}
             />
             <PackageCard
+              bundling={true}
+              tncBundling={true}
               bandWidth={"30"}
               namaPaket={"DULUXE"}
               channel={"65"}
@@ -46,6 +50,8 @@ export default function BintaroPackage() {
               price={"505.000"}
             />
             <PackageCard
+              bundling={true}
+              tncBundling={true}
               bandWidth={"50"}
               namaPaket={"MAX"}
               channel={"80"}

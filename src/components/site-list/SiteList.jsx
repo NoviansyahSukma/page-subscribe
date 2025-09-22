@@ -1,4 +1,4 @@
-import Card from "./site-card/Card";
+import Card from "../card/SiteCard";
 import logoBintaro from "../../assets/image/logo-bintaro.png";
 import thumbBintaro from "../../assets/image/thumb-bintaro.jpg";
 import logoCibubur from "../../assets/image/logo-cibubur.png";

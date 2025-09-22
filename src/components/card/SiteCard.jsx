@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-export default function Card({ logo, thumb, alt, link }) {
+export default function SiteCard({ logo, thumb, alt, link }) {
   return (
     <>
       <div className="max-w-96 m-auto pt-2 pb-6 shadow-sm transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-102 hover:bg-slate-100 hover:shadow-md hover:shadow-slate-500">
