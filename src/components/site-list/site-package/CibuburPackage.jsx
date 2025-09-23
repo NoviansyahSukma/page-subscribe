@@ -20,7 +20,7 @@ export default function CibuburPackage() {
             INTERNET & TV
           </h3>
 
-          <div className="w-full m-auto mt-2 px-1 py-4 rounded-sm shadow-md shadow-purple-900 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="w-full m-auto mt-4 px-1 py-6 rounded-sm border-1 border-purple-900 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <PackageCard
               bundling={true}
               tncBundling={true}
@@ -60,12 +60,12 @@ export default function CibuburPackage() {
           </div>
         </div>
 
-        <div className="w-full px-4 mt-7 m-auto">
+        <div className="w-full px-4 mt-10 m-auto">
           <h3 className="text-2xl tracking-wide font-semibold ml-7 text-slate-600">
             INTERNET ONLY
           </h3>
 
-          <div className="w-full m-auto mt-2 px-1 py-4 rounded-sm shadow-md shadow-blue-900 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="w-full m-auto mt-4 px-1 py-6 rounded-sm border-1 border-blue-900 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <PackageCard
               bandWidth={"20"}
               namaPaket={"LITE"}

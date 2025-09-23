@@ -1,11 +1,6 @@
 import { FaTools } from "react-icons/fa";
-// import TnC from "../button/TnC";
-import { useState } from "react";
-import Modal from "../modal/Modal";
-import Bundling from "../modal/modal-content/term-n-condt/Bundling";
-import InetOnly from "../modal/modal-content/term-n-condt/InetOnly";
-import BundlingJuanda from "../modal/modal-content/term-n-condt/BundlingJuanda";
-import IplJuanda from "../modal/modal-content/term-n-condt/IplJuanda";
+import TnC from "../button/TnC";
+import Subscribe from "../button/Subscribe";
 
 export default function PackageCard({
   bandWidth,
@@ -18,8 +13,6 @@ export default function PackageCard({
   tncBundling,
   tncJuanda,
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
     <>
       <div className="min-w-68 sm:min-w-68 m-auto pb-6 shadow-sm shadow-gray-500 rounded-sm overflow-hidden transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-102 hover:bg-slate-100 hover:shadow-md">
@@ -107,35 +100,8 @@ export default function PackageCard({
 
         {/* button card package */}
         <div className="w-full m-auto mt-5">
-          <button
-            onClick={() => setIsOpen(true)}
-            className="bg-red-500 m-auto block text-slate-100 py-1 px-3 rounded-lg hover:bg-red-600 hover:shadow-md"
-          >
-            Syarat & Ketentuan
-          </button>
-          {tncJuanda ? (
-            <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-              {/* <IplJuanda /> */}
-              {dvb ? (
-                <IplJuanda setIsOpen={setIsOpen} />
-              ) : (
-                <BundlingJuanda setIsOpen={setIsOpen} />
-              )}
-            </Modal>
-          ) : (
-            <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-              {tncBundling ? (
-                <Bundling setIsOpen={setIsOpen} />
-              ) : (
-                <InetOnly setIsOpen={setIsOpen} />
-              )}
-            </Modal>
-          )}
-
-          {/* button card subscribe */}
-          <button className="bg-sky-500 m-auto mt-4 block text-slate-50 py-1 px-2 rounded-lg hover:bg-blue-600 hover:shadow-md">
-            Berlangganan
-          </button>
+          <TnC tncBundling={tncBundling} tncJuanda={tncJuanda} dvb={dvb} />
+          <Subscribe />
         </div>
       </div>
     </>
