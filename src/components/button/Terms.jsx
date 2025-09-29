@@ -1,11 +1,11 @@
 import { useState } from "react";
 import Modal from "../modal/Modal";
-import Bundling from "../modal/modal-content/term-n-condt/Bundling";
-import InetOnly from "../modal/modal-content/term-n-condt/InetOnly";
-import BundlingJuanda from "../modal/modal-content/term-n-condt/BundlingJuanda";
-import IplJuanda from "../modal/modal-content/term-n-condt/IplJuanda";
+import Bundling from "../modal/modal-content/terms/Bundling";
+import BundlingJuanda from "../modal/modal-content/terms/BundlingJuanda";
+import IplJuanda from "../modal/modal-content/terms/IplJuanda";
+import InetOnly from "../modal/modal-content/terms/InetOnly";
 
-export default function TnC({ dvb, tncBundling, tncJuanda }) {
+export default function Terms({ bundling, bundlingJuanda, bundlingIpl }) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
@@ -15,9 +15,10 @@ export default function TnC({ dvb, tncBundling, tncJuanda }) {
       >
         Syarat & Ketentuan
       </button>
-      {tncJuanda ? (
+
+      {bundlingJuanda ? (
         <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-          {dvb ? (
+          {bundlingIpl ? (
             <IplJuanda setIsOpen={setIsOpen} />
           ) : (
             <BundlingJuanda setIsOpen={setIsOpen} />
@@ -25,7 +26,7 @@ export default function TnC({ dvb, tncBundling, tncJuanda }) {
         </Modal>
       ) : (
         <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-          {tncBundling ? (
+          {bundling ? (
             <Bundling setIsOpen={setIsOpen} />
           ) : (
             <InetOnly setIsOpen={setIsOpen} />

@@ -2,11 +2,11 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, HashRouter, Route, Routes } from "react-router";
 import SitePage from "./components/SitePage";
-import SiteList from "./components/site-list/SiteList";
-import BintaroPackage from "./components/site-list/site-package/BintaroPackage";
-import CibuburPackage from "./components/site-list/site-package/CibuburPackage";
-import JuandaPackage from "./components/site-list/site-package/JuandaPackage";
-import Modal from "./components/modal/Modal";
+import SiteList from "./components/SiteList";
+import Bintaro from "./components/package/Bintaro";
+import Cibubur from "./components/package/Cibubur";
+import Juanda from "./components/package/Juanda";
+import Surabaya from "./components/package/Surabaya";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -14,10 +14,11 @@ createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<SitePage />}>
           <Route index element={<SiteList />} />
-          <Route path="package">
-            <Route path="bintaro" element={<BintaroPackage />} />
-            <Route path="cibubur" element={<CibuburPackage />} />
-            <Route path="juanda" element={<JuandaPackage />} />
+          <Route path="paket">
+            <Route path="bintaro" element={<Bintaro />} />
+            <Route path="cibubur" element={<Cibubur />} />
+            <Route path="juanda" element={<Juanda />} />
+            <Route path="surabaya" element={<Surabaya />} />
           </Route>
         </Route>
       </Routes>

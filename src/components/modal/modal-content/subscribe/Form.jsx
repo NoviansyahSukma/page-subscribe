@@ -2,10 +2,20 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FaChevronDown } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa6";
 import ReCAPTCHA from "react-google-recaptcha";
-import { Link } from "react-router";
+import Accordion from "./Accordion";
+import SpanTerms from "../../../button/SpanTerms";
 
-export default function Form({ setIsOpen }) {
+export default function Form({
+  setIsOpen,
+  textHeadForm,
+  paket,
+  towerOpt,
+  bundlingJuanda,
+  bundling,
+  bundlingIpl,
+}) {
   const [fileKtpName, setFileKtpName] = useState("");
   const [fileSelfieName, setFileSelfieName] = useState("");
   const [UrlKtp, setUrlKtp] = useState("");
@@ -18,10 +28,7 @@ export default function Form({ setIsOpen }) {
 
   const registerForm = (e) => {
     e.preventDefault();
-    // alert("Submit Form");
-    alert(formik.values.foto_ktp);
-    console.log(formik.values.foto_ktp);
-    console.log("dari", UrlKtp);
+    alert("Submit Form");
   };
 
   const formik = useFormik({
@@ -30,6 +37,7 @@ export default function Form({ setIsOpen }) {
       no_ktp: "",
       email: "",
       no_telp: "",
+      status: "",
       tower: "",
       lantai: "",
       unit: "",
@@ -51,13 +59,14 @@ export default function Form({ setIsOpen }) {
       no_telp: Yup.string()
         .required("No Telp wajib diisi")
         .matches(phoneRegex, "Format nomor telepon tidak valid"),
+      status: Yup.string().required("Status wajib dipilih"),
       tower: Yup.string().required("Tower wajib dipilih"),
       lantai: Yup.string().required("Lantai wajib diisi"),
       unit: Yup.string().required("Unit wajib diisi"),
       foto_ktp: Yup.mixed()
         .required("Wajib lampirkan Foto")
-        .test("fileSize", "Foto harus dibawah 5 MB", (value) => {
-          return value && value.size <= 5000000; // 2 MB
+        .test("fileSize", "Foto harus dibawah 2 MB", (value) => {
+          return value && value.size <= 2000000; // 2 MB
         })
         .test("fileType", "File harus berupa Foto", (value) => {
           return (
@@ -100,6 +109,7 @@ export default function Form({ setIsOpen }) {
     formik.setFieldValue(target.no_ktp, target.value);
     formik.setFieldValue(target.email, target.value);
     formik.setFieldValue(target.no_telp, target.value);
+    formik.setFieldValue(target.status, target.value);
     formik.setFieldValue(target.tower, target.value);
     formik.setFieldValue(target.lantai, target.value);
     formik.setFieldValue(target.unit, target.value);
@@ -107,18 +117,22 @@ export default function Form({ setIsOpen }) {
 
   return (
     <>
-      <div className="w-full max-w-9/10 m-auto">
+      <div className="w-full max-w-9/10 m-auto py-4">
+        <div className="w-full">
+          <h2 className="text-xl font-semibold text-slate-500 text-center">
+            KONTRAK BERLANGGANAN TRANSPARK {textHeadForm}
+          </h2>
+          <p className="mt-2 text-lg text-slate-500 text-center">
+            Informasi berlangganan anda :
+          </p>
+          <p className="mt-2 text-md text-slate-500 font-semibold text-center md:text-left">
+            Paket {paket}
+          </p>
+        </div>
         <form onSubmit={formik.handleSubmit}>
           <div className="w-full space-y-12">
-            <div className="border-b border-slate-400 pb-12 pt-4">
-              <h2 className="text-xl font-semibold text-slate-500 text-center">
-                KONTRAK BERLANGGANAN TRANSPARK BINTARO
-              </h2>
-              <p className="mt-2 text-md/6 text-slate-500 text-center">
-                Informasi berlangganan anda :
-              </p>
-
-              <div className="w-full bg-slate-500 text-slate-100 rounded-xs pl-2 py-1 mt-7 shadow-sm">
+            <div className="border-b border-slate-400 pb-12">
+              <div className="w-full bg-slate-500 text-slate-100 rounded-xs pl-2 py-1 mt-1.5 shadow-sm">
                 DATA PELANGGAN
               </div>
               <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-6 px-1">
@@ -136,7 +150,7 @@ export default function Form({ setIsOpen }) {
                       type="text"
                       onChange={handleForm}
                       onBlur={formik.handleBlur}
-                      className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 ${
+                      className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.name && formik.errors.name
                           ? "outline-red-500"
                           : "focus:outline-sky-300 outline-slate-300"
@@ -164,7 +178,7 @@ export default function Form({ setIsOpen }) {
                       type="number"
                       onChange={handleForm}
                       onBlur={formik.handleBlur}
-                      className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 ${
+                      className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.no_ktp && formik.errors.no_ktp
                           ? "outline-red-500"
                           : "focus:outline-sky-300 outline-slate-300"
@@ -192,7 +206,7 @@ export default function Form({ setIsOpen }) {
                       type="email"
                       onChange={handleForm}
                       onBlur={formik.handleBlur}
-                      className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 ${
+                      className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.email && formik.errors.email
                           ? "outline-red-500"
                           : "focus:outline-sky-300 outline-slate-300"
@@ -220,7 +234,7 @@ export default function Form({ setIsOpen }) {
                       type="number"
                       onChange={handleForm}
                       onBlur={formik.handleBlur}
-                      className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 ${
+                      className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.no_telp && formik.errors.no_telp
                           ? "outline-red-500"
                           : "focus:outline-sky-300 outline-slate-300"
@@ -229,6 +243,44 @@ export default function Form({ setIsOpen }) {
                     {formik.touched.no_telp && formik.errors.no_telp && (
                       <div className="text-red-500 text-sm mt-1">
                         {formik.errors.no_telp}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label
+                    htmlFor="status"
+                    className="block text-sm/6 font-medium text-slate-500"
+                  >
+                    Status Kepemilikan
+                  </label>
+                  <div className="mt-2 relative">
+                    <select
+                      id="status"
+                      name="status"
+                      value={formik.values.status}
+                      onChange={handleForm}
+                      onBlur={formik.handleBlur}
+                      className={`block w-full appearance-none rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
+                        formik.touched.status && formik.errors.status
+                          ? "outline-red-500"
+                          : "focus:outline-sky-300 outline-slate-300"
+                      }`}
+                    >
+                      <option value="" disabled>
+                        Pilih Status
+                      </option>
+                      <option value="pemilik">Pemilik</option>
+                      <option value="penyewa">Penyewa</option>
+                    </select>
+                    <FaChevronDown
+                      aria-hidden="true"
+                      className="pointer-events-none absolute right-3 -translate-y-6 text-slate-500 text-sm"
+                    />
+                    {formik.touched.status && formik.errors.status && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {formik.errors.status}
                       </div>
                     )}
                   </div>
@@ -248,7 +300,7 @@ export default function Form({ setIsOpen }) {
                       value={formik.values.tower}
                       onChange={handleForm}
                       onBlur={formik.handleBlur}
-                      className={`block w-full appearance-none rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 ${
+                      className={`block w-full appearance-none rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.tower && formik.errors.tower
                           ? "outline-red-500"
                           : "focus:outline-sky-300 outline-slate-300"
@@ -257,7 +309,11 @@ export default function Form({ setIsOpen }) {
                       <option value="" disabled>
                         Pilih Tower
                       </option>
-                      <option value="chicago">Chicago</option>
+                      {towerOpt.map((t) => (
+                        <option key={t.id} value={t.nameTower}>
+                          {t.nameTower}
+                        </option>
+                      ))}
                     </select>
                     <FaChevronDown
                       aria-hidden="true"
@@ -285,7 +341,7 @@ export default function Form({ setIsOpen }) {
                       type="text"
                       onChange={handleForm}
                       onBlur={formik.handleBlur}
-                      className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 ${
+                      className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.lantai && formik.errors.lantai
                           ? "outline-red-500"
                           : "focus:outline-sky-300 outline-slate-300"
@@ -313,7 +369,7 @@ export default function Form({ setIsOpen }) {
                       type="text"
                       onChange={handleForm}
                       onBlur={formik.handleBlur}
-                      className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 ${
+                      className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.unit && formik.errors.unit
                           ? "outline-red-500"
                           : "focus:outline-sky-300 outline-slate-300"
@@ -337,7 +393,7 @@ export default function Form({ setIsOpen }) {
                     Foto Identitas / KTP
                     <div className="mt-2 flex flex-col items-center w-full max-w-md mx-auto">
                       <div
-                        className={`flex flex-col items-center px-6 py-4 bg-slate-100 text-blue-600 rounded-lg border-2 border-blue-500 border-dashed cursor-pointer hover:bg-blue-100 transition ${
+                        className={`flex flex-col items-center px-6 py-4 bg-slate-100 text-blue-600 rounded-lg border-2 border-blue-500 border-dashed cursor-pointer hover:bg-blue-100 transition hover:shadow-md ${
                           formik.touched.foto_ktp && formik.errors.foto_ktp
                             ? "border-red-500"
                             : "border-blue-500"
@@ -415,7 +471,7 @@ export default function Form({ setIsOpen }) {
                     Foto Selfie
                     <div className="mt-2 flex flex-col items-center w-full max-w-md mx-auto">
                       <div
-                        className={`flex flex-col items-center px-6 py-4 bg-slate-100 text-blue-600 rounded-lg border-2 border-blue-500 border-dashed cursor-pointer hover:bg-blue-100 transition ${
+                        className={`flex flex-col items-center px-6 py-4 bg-slate-100 text-blue-600 rounded-lg border-2 border-blue-500 border-dashed cursor-pointer hover:bg-blue-100 transition hover:shadow-md ${
                           formik.touched.foto_selfie &&
                           formik.errors.foto_selfie
                             ? "border-red-500"
@@ -489,70 +545,55 @@ export default function Form({ setIsOpen }) {
             </div>
           </div>
 
-          <div className="w-full mt-5">
+          <div className="w-full mt-5 border-1 border-slate-500 rounded-lg p-3 pb-4">
             <h3 className="text-slate-800 font-semibold">Info Penting</h3>
-            <ol className="list-decimal px-4 mt-2 text-slate-800">
-              <li>
-                Harga sebagaimana disebutkan{" "}
-                <span className="font-semibold">diatas sebelum PPN 11%</span>{" "}
-                dan belum termasuk biaya materai.
-              </li>
-              <li>
-                Silahkan melakukan pembayaran di Payment Channel Transvision.
-              </li>
-              <li>
-                Pembayaran dilakukan dengan memasukkan Kode Pembayaran ID
-                Pelanggan &#40;
-                <span className="font-semibold">contoh:127899887766</span>&#41;.
-              </li>
-              <li>
-                Perangkat ONT, STB/Dekoder dan kelengkapannya merupakan milik
-                DIJ/Transvision selama berlangganan layanan DIJ/Transvision, dan
-                wajib dikembalikan apabila periode berlangganan berakhir. Selama
-                dipinjam-pakaikan perangkat ONT, STB/Dekoder dan kelengkapannya
-                merupakan tanggungjawab Pelanggan sehingga kerusakan ataupun
-                kehilangan dikarenakan kelalaian Pelanggan akan dikenakan biaya
-                sesuai tarif yang berlaku.
-              </li>
-              <li>
-                Bila ada pertanyaan, silahkan menghubungi contact center kami di
-                02150999333 atau email:{" "}
-                <span className="text-blue-700 font-semibold">
-                  helpdesk@detikinijuga.net.id
-                </span>{" "}
-                atau nomor Whatsapp di{" "}
-                <Link
-                  to="https://wa.me/6282299000147"
-                  target="blank"
-                  className="text-green-700 font-semibold hover:text-green-500"
-                >
-                  0822-9900-0147
-                </Link>
-              </li>
-              <li>
-                Dengan submit formulir ini, pelanggan telah menyetujui untuk
-                berlangganan layanan DIJ/Transvision dan mengikuti syarat dan
-                ketentuan berlangganan layanan DIJ/Transvision.
-              </li>
-            </ol>
-
-            <div className="mt-4">
-              <label htmlFor="terms">
-                <div className="mt-2 flex items-baseline">
-                  <input
-                    id="terms"
-                    name="terms"
-                    type="checkbox"
-                    required
-                    className="outline-1 outline-red-400 hover:outline-red-500 rounded-md focus:outline-blue-500"
+            <div>
+              {bundlingJuanda ? (
+                <>
+                  <Accordion
+                    text={"Paket Berlangganan Bundling Tv"}
+                    infoBundling={true}
                   />
-                  <span className="text-md ml-2 font-semibold text-slate-800">
-                    Saya telah membaca dan menyetujui Syarat & Ketentuan yang
-                    berlaku
-                  </span>
-                </div>
-              </label>
+                </>
+              ) : (
+                <>
+                  <Accordion
+                    text={"Paket Berlangganan Bundling Tv"}
+                    infoBundling={true}
+                  />
+                  <Accordion text={"Paket Berlangganan Internet Only"} />
+                </>
+              )}
             </div>
+          </div>
+
+          <div className="mt-4 pl-2">
+            <label className="flex items-baseline gap-3">
+              <div>
+                <input
+                  type="checkbox"
+                  required
+                  className="outline-2 outline-blue-500 invalid:outline-red-500 w-4 h-4 p-2"
+                />
+              </div>
+              <span className="text-slate-800">
+                Saya menyetujui{" "}
+                {bundlingJuanda ? (
+                  <span>
+                    {bundlingIpl ? (
+                      <SpanTerms bundlingJuanda bundlingIpl />
+                    ) : (
+                      <SpanTerms bundlingJuanda />
+                    )}
+                  </span>
+                ) : (
+                  <span>
+                    {bundling ? <SpanTerms bundling /> : <SpanTerms />}
+                  </span>
+                )}{" "}
+                yang berlaku
+              </span>
+            </label>
           </div>
 
           <div className="w-xs m-auto mt-4 py-3 rounded-sm border-1 border-slate-200 flex items-center">

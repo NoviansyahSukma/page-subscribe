@@ -1,9 +1,18 @@
 import { useState } from "react";
 import Form from "../modal/modal-content/subscribe/Form";
 import Modal from "../modal/Modal";
+import InetOnly from "../modal/modal-content/terms/InetOnly";
 
-export default function Subscribe() {
+export default function Subscribe({
+  textHeadForm,
+  paket,
+  tower,
+  bundlingJuanda,
+  bundling,
+  bundlingIpl,
+}) {
   const [isOpen, setIsOpen] = useState(false);
+
   return (
     <>
       <button
@@ -14,7 +23,16 @@ export default function Subscribe() {
       </button>
 
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-        <Form setIsOpen={setIsOpen} />
+        <Form
+          setIsOpen={setIsOpen}
+          textHeadForm={textHeadForm}
+          bundlingJuanda={bundlingJuanda}
+          paket={paket}
+          towerOpt={tower}
+          internetOnly={true}
+          bundling={bundling}
+          bundlingIpl={bundlingIpl}
+        />
       </Modal>
     </>
   );
