@@ -6,6 +6,8 @@ import { FaCheck } from "react-icons/fa6";
 import ReCAPTCHA from "react-google-recaptcha";
 import Accordion from "./Accordion";
 import SpanTerms from "../../../button/SpanTerms";
+import { alertConfirm } from "../../../../lib/alert";
+import { useNavigate } from "react-router";
 
 export default function Form({
   setIsOpen,
@@ -21,14 +23,25 @@ export default function Form({
   const [UrlKtp, setUrlKtp] = useState("");
   const [UrlSelfie, setUrlSelfie] = useState("");
 
+  const navigate = useNavigate();
+
   const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
   const phoneRegex =
     /^(?:\\+62|62|0)(?:8[1-9][0-9]{7,10}|(?:21|22|24|31|61|72|74)[0-9]{6,8})$/;
 
-  const registerForm = (e) => {
-    e.preventDefault();
-    alert("Submit Form");
+  const registerForm = async () => {
+    const confirmed = await alertConfirm(
+      `Anda Berlangganan ${paket} ${textHeadForm}`
+    );
+
+    if (!confirmed) {
+      console.log("Dibatalkan oleh user");
+      return;
+    }
+
+    console.log("Data dikirim");
+    navigate("/");
   };
 
   const formik = useFormik({
