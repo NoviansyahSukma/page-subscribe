@@ -11,9 +11,8 @@ import {
   alertError,
   alertLoading,
 } from "../../../../lib/alert";
-import axios from "axios";
 import Swal from "sweetalert2";
-// import { useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 export default function Form({
   setIsOpen,
@@ -33,7 +32,7 @@ export default function Form({
 
   const reCaptchaRef = useRef(null);
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
@@ -127,46 +126,20 @@ export default function Form({
       setIsLoading(true);
       alertLoading("Mohon Tunggu Sebentar.");
 
-      try {
-        const formData = new FormData();
-
-        Object.entries(values).forEach(([key, value]) => {
-          formData.append(key, value);
-        });
-
-        //captcha token
-        formData.append("recaptcha", captchaValue);
-
-        const response = await axios.post(
-          "http://localhost:5000/customers",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+      setTimeout(async () => {
+        await alertSuccess(
+          "Terima Kasih Sudah Mendaftar. Silahkan Cek Email Anda."
         );
-
-        if (response.status >= 200 && response.status < 300) {
-          await alertSuccess(
-            "Terima Kasih Sudah Mendaftar. Silahkan Cek Email Anda."
-          );
-          setUrlKtp(null);
-          setUrlSelfie(null);
-          setCaptchaValue(null);
-          setIsVerified(false);
-          setIsChecked(false);
-          resetForm();
-        } else {
-          await alertError("Pendaftaran gagal. Silakan coba lagi.");
-        }
-      } catch (error) {
-        console.error("Gagal mengirim form:", error);
-        await alertError("Terjadi kesalahan saat mengirim data.");
-      } finally {
+        setUrlKtp(null);
+        setUrlSelfie(null);
+        setCaptchaValue(null);
+        setIsVerified(false);
+        setIsChecked(false);
         setIsLoading(false);
+        resetForm();
         Swal.close();
-      }
+        navigate("/");
+      }, 3000);
     },
   });
 
