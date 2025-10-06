@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FaChevronDown } from "react-icons/fa";
-import { FaCheck } from "react-icons/fa6";
 import ReCAPTCHA from "react-google-recaptcha";
 import Accordion from "./Accordion";
 import SpanTerms from "../../../button/SpanTerms";
-import { alertConfirm } from "../../../../lib/alert";
-import { useNavigate } from "react-router";
+import {
+  alertConfirm,
+  alertSuccess,
+  alertError,
+  alertLoading,
+} from "../../../../lib/alert";
+import axios from "axios";
+import Swal from "sweetalert2";
+// import { useNavigate } from "react-router";
 
 export default function Form({
   setIsOpen,
@@ -18,36 +24,27 @@ export default function Form({
   bundling,
   bundlingIpl,
 }) {
-  const [fileKtpName, setFileKtpName] = useState("");
-  const [fileSelfieName, setFileSelfieName] = useState("");
-  const [UrlKtp, setUrlKtp] = useState("");
-  const [UrlSelfie, setUrlSelfie] = useState("");
+  const [UrlKtp, setUrlKtp] = useState(null);
+  const [UrlSelfie, setUrlSelfie] = useState(null);
+  const [captchaValue, setCaptchaValue] = useState(null);
+  const [isVerified, setIsVerified] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const navigate = useNavigate();
+  const reCaptchaRef = useRef(null);
+
+  // const navigate = useNavigate();
 
   const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
   const phoneRegex =
     /^(?:\\+62|62|0)(?:8[1-9][0-9]{7,10}|(?:21|22|24|31|61|72|74)[0-9]{6,8})$/;
 
-  const registerForm = async () => {
-    const confirmed = await alertConfirm(
-      `Anda Berlangganan ${paket} ${textHeadForm}`
-    );
-
-    if (!confirmed) {
-      console.log("Dibatalkan oleh user");
-      return;
-    }
-
-    console.log("Data dikirim");
-    navigate("/");
-  };
-
   const formik = useFormik({
     initialValues: {
+      paket: paket,
       name: "",
-      no_ktp: "",
+      nik: "",
       email: "",
       no_telp: "",
       status: "",
@@ -56,16 +53,16 @@ export default function Form({
       unit: "",
       foto_ktp: "",
       foto_selfie: "",
-      captcha: "",
     },
 
     validationSchema: Yup.object().shape({
       name: Yup.string()
         .required("Nama wajib diisi")
         .min(3, "Minimal 3 karakter"),
-      no_ktp: Yup.string()
-        .required("No KTP wajib diisi")
-        .min(16, "Minimal 16 digit"),
+      nik: Yup.string()
+        .required("NIK wajib diisi")
+        .min(16, "Minimal 16 digit")
+        .matches(/^\d+$/, "NIK tidak sesuai"),
       email: Yup.string()
         .required("Email wajib diisi")
         .email("Email tidak valid"),
@@ -95,8 +92,8 @@ export default function Form({
         }),
       foto_selfie: Yup.mixed()
         .required("Wajib lampirkan Foto")
-        .test("fileSize", "Foto harus dibawah 5 MB", (value) => {
-          return value && value.size <= 5000000; // 2 MB
+        .test("fileSize", "Foto harus dibawah 2 MB", (value) => {
+          return value && value.size <= 2000000; // 2 MB
         })
         .test("fileType", "File harus berupa Foto", (value) => {
           return (
@@ -111,21 +108,93 @@ export default function Form({
           );
         }),
     }),
-    captcha: Yup.string().required("Silahkan Verifikasi"),
-    validateOnMount: true,
-    onSubmit: registerForm,
+    onSubmit: async (values, { resetForm }) => {
+      const confirmed = await alertConfirm(
+        `Anda Berlangganan ${paket} ${textHeadForm}`
+      );
+
+      if (!confirmed) {
+        console.log("Dibatalkan oleh user");
+        return;
+      }
+
+      // Cek captcha
+      if (!captchaValue) {
+        await alertError("Silakan selesaikan reCAPTCHA terlebih dahulu.");
+        return;
+      }
+
+      setIsLoading(true);
+      alertLoading("Mohon Tunggu Sebentar.");
+
+      try {
+        const formData = new FormData();
+
+        Object.entries(values).forEach(([key, value]) => {
+          formData.append(key, value);
+        });
+
+        //captcha token
+        formData.append("recaptcha", captchaValue);
+
+        const response = await axios.post(
+          "http://localhost:5000/customers",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (response.status >= 200 && response.status < 300) {
+          await alertSuccess(
+            "Terima Kasih Sudah Mendaftar. Silahkan Cek Email Anda."
+          );
+          setUrlKtp(null);
+          setUrlSelfie(null);
+          setCaptchaValue(null);
+          setIsVerified(false);
+          setIsChecked(false);
+          resetForm();
+        } else {
+          await alertError("Pendaftaran gagal. Silakan coba lagi.");
+        }
+      } catch (error) {
+        console.error("Gagal mengirim form:", error);
+        await alertError("Terjadi kesalahan saat mengirim data.");
+      } finally {
+        setIsLoading(false);
+        Swal.close();
+      }
+    },
   });
 
-  const handleForm = (e) => {
-    const { target } = e;
-    formik.setFieldValue(target.name, target.value);
-    formik.setFieldValue(target.no_ktp, target.value);
-    formik.setFieldValue(target.email, target.value);
-    formik.setFieldValue(target.no_telp, target.value);
-    formik.setFieldValue(target.status, target.value);
-    formik.setFieldValue(target.tower, target.value);
-    formik.setFieldValue(target.lantai, target.value);
-    formik.setFieldValue(target.unit, target.value);
+  const handleInputChange = (e) => {
+    const { name, value, type, files } = e.target;
+
+    if (type === "file") {
+      const file = files[0];
+      formik.setFieldValue(name, file);
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (name === "foto_ktp") setUrlKtp(reader.result);
+        if (name === "foto_selfie") setUrlSelfie(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      formik.setFieldValue(name, value);
+    }
+  };
+
+  const handleExpired = () => {
+    setIsVerified(false);
+  };
+
+  const handleCaptchaChange = (value) => {
+    setCaptchaValue(value);
+    setIsVerified(true);
   };
 
   return (
@@ -161,7 +230,8 @@ export default function Form({
                       id="name"
                       name="name"
                       type="text"
-                      onChange={handleForm}
+                      value={formik.values.name}
+                      onChange={handleInputChange}
                       onBlur={formik.handleBlur}
                       className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.name && formik.errors.name
@@ -179,27 +249,29 @@ export default function Form({
 
                 <div className="sm:col-span-3">
                   <label
-                    htmlFor="no_ktp"
+                    htmlFor="nik"
                     className="block text-sm/6 font-medium text-slate-500"
                   >
-                    No. Identitas / KTP
+                    NIK
                   </label>
                   <div className="mt-2">
                     <input
-                      id="no_ktp"
-                      name="no_ktp"
-                      type="number"
-                      onChange={handleForm}
+                      id="nik"
+                      name="nik"
+                      type="text"
+                      inputMode="numeric"
+                      value={formik.values.nik}
+                      onChange={handleInputChange}
                       onBlur={formik.handleBlur}
                       className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
-                        formik.touched.no_ktp && formik.errors.no_ktp
+                        formik.touched.nik && formik.errors.nik
                           ? "outline-red-500"
                           : "focus:outline-sky-300 outline-slate-300"
                       }`}
                     />
-                    {formik.touched.no_ktp && formik.errors.no_ktp && (
+                    {formik.touched.nik && formik.errors.nik && (
                       <div className="text-red-500 text-sm mt-1">
-                        {formik.errors.no_ktp}
+                        {formik.errors.nik}
                       </div>
                     )}
                   </div>
@@ -217,7 +289,8 @@ export default function Form({
                       id="email"
                       name="email"
                       type="email"
-                      onChange={handleForm}
+                      value={formik.values.email}
+                      onChange={handleInputChange}
                       onBlur={formik.handleBlur}
                       className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.email && formik.errors.email
@@ -244,8 +317,10 @@ export default function Form({
                     <input
                       id="no_telp"
                       name="no_telp"
-                      type="number"
-                      onChange={handleForm}
+                      type="text"
+                      inputMode="numeric"
+                      value={formik.values.no_telp}
+                      onChange={handleInputChange}
                       onBlur={formik.handleBlur}
                       className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.no_telp && formik.errors.no_telp
@@ -273,7 +348,7 @@ export default function Form({
                       id="status"
                       name="status"
                       value={formik.values.status}
-                      onChange={handleForm}
+                      onChange={handleInputChange}
                       onBlur={formik.handleBlur}
                       className={`block w-full appearance-none rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.status && formik.errors.status
@@ -311,7 +386,7 @@ export default function Form({
                       id="tower"
                       name="tower"
                       value={formik.values.tower}
-                      onChange={handleForm}
+                      onChange={handleInputChange}
                       onBlur={formik.handleBlur}
                       className={`block w-full appearance-none rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.tower && formik.errors.tower
@@ -352,7 +427,8 @@ export default function Form({
                       id="lantai"
                       name="lantai"
                       type="text"
-                      onChange={handleForm}
+                      value={formik.values.lantai}
+                      onChange={handleInputChange}
                       onBlur={formik.handleBlur}
                       className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.lantai && formik.errors.lantai
@@ -380,7 +456,8 @@ export default function Form({
                       id="unit"
                       name="unit"
                       type="text"
-                      onChange={handleForm}
+                      value={formik.values.unit}
+                      onChange={handleInputChange}
                       onBlur={formik.handleBlur}
                       className={`block w-full rounded-md bg-slate-100 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 placeholder:text-slate-300 sm:text-sm/6 hover:outline-sky-400 hover:shadow-md ${
                         formik.touched.unit && formik.errors.unit
@@ -431,25 +508,7 @@ export default function Form({
                           type="file"
                           onBlur={formik.handleBlur}
                           className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-
-                            if (file) {
-                              setFileKtpName(file.name);
-
-                              // Jika gambar, buat preview
-                              if (file.type.startsWith("image/")) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                  setUrlKtp(reader.result);
-                                };
-                                reader.readAsDataURL(file);
-                                formik.setFieldValue("foto_ktp", file);
-                              } else {
-                                setUrlKtp("");
-                              }
-                            }
-                          }}
+                          onChange={handleInputChange}
                         />
                       </div>
                       {formik.touched.foto_ktp && formik.errors.foto_ktp && (
@@ -459,13 +518,6 @@ export default function Form({
                       )}
                     </div>
                   </label>
-
-                  {fileKtpName && (
-                    <p className="mt-4 text-sm text-gray-700 font-medium text-center">
-                      File dipilih:{" "}
-                      <span className="text-blue-600">{fileKtpName}</span>
-                    </p>
-                  )}
 
                   {UrlKtp && (
                     <img
@@ -509,25 +561,7 @@ export default function Form({
                           name="foto_selfie"
                           type="file"
                           className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-
-                            if (file) {
-                              setFileSelfieName(file.name);
-
-                              // Jika gambar, buat preview
-                              if (file.type.startsWith("image/")) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                  setUrlSelfie(reader.result);
-                                };
-                                reader.readAsDataURL(file);
-                                formik.setFieldValue("foto_selfie", file);
-                              } else {
-                                setUrlSelfie("");
-                              }
-                            }
-                          }}
+                          onChange={handleInputChange}
                         />
                       </div>
                       {formik.touched.foto_selfie &&
@@ -538,13 +572,6 @@ export default function Form({
                         )}
                     </div>
                   </label>
-
-                  {fileSelfieName && (
-                    <p className="mt-4 text-sm text-gray-700 font-medium text-center">
-                      File dipilih:{" "}
-                      <span className="text-blue-600">{fileSelfieName}</span>
-                    </p>
-                  )}
 
                   {UrlSelfie && (
                     <img
@@ -586,6 +613,8 @@ export default function Form({
                 <input
                   type="checkbox"
                   required
+                  checked={isChecked}
+                  onChange={(e) => setIsChecked(e.target.checked)}
                   className="outline-2 outline-blue-500 invalid:outline-red-500 w-4 h-4 p-2"
                 />
               </div>
@@ -612,7 +641,10 @@ export default function Form({
           <div className="w-xs m-auto mt-4 py-3 rounded-sm border-1 border-slate-200 flex items-center">
             <ReCAPTCHA
               sitekey={siteKey}
-              onChange={""}
+              name="captcha"
+              onChange={handleCaptchaChange}
+              onExpired={handleExpired}
+              ref={reCaptchaRef}
               required
               className="inline-block m-auto"
             />
@@ -628,10 +660,14 @@ export default function Form({
             </button>
             <button
               type="submit"
-              // disabled={!formik.isValid}
-              className="cursor-pointer rounded-md bg-blue-500 hover:bg-blue-400 px-3 py-2 text-sm font-semibold text-white"
+              className={`rounded-md px-3 py-2 text-sm font-semibold text-white ${
+                isVerified
+                  ? "bg-blue-500 hover:bg-blue-400 cursor-pointer"
+                  : "bg-slate-300"
+              }`}
+              disabled={isLoading}
             >
-              Submit
+              {isLoading ? "Mengirim..." : "Submit"}
             </button>
           </div>
         </form>

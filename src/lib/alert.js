@@ -28,3 +28,15 @@ export const alertConfirm = async (message) => {
   });
   return result.isConfirmed;
 };
+
+export const alertLoading = async (message) => {
+  return Swal.fire({
+    title: "Loading...",
+    text: message,
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+};
